@@ -55,3 +55,16 @@ display(races_final_tranformation_df)
 # COMMAND ----------
 
 races_final_tranformation_df.write.mode('overwrite').parquet('/mnt/f1datalake16/processed/races')
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ###### Partioning of parquet file
+
+# COMMAND ----------
+
+races_final_tranformation_df.write.partitionBy('race_year').mode('overwrite').parquet('/mnt/f1datalake16/processed/races')
+
+# COMMAND ----------
+
+display(spark.read.parquet('/mnt/f1datalake16/processed/races'))

@@ -5,12 +5,21 @@
 
 # COMMAND ----------
 
+# MAGIC %run "../includes/configuration"
+# MAGIC
+
+# COMMAND ----------
+
+# MAGIC %run "../includes/common_functions"
+
+# COMMAND ----------
+
 # MAGIC %md 
 # MAGIC ######Read the CSV file using spark dataframe reader
 
 # COMMAND ----------
 
-display(dbutils.fs.ls("dbfs:/mnt/f1datalake16/raw/circuits.csv"))
+display(dbutils.fs.ls(f"{raw_folder_path}/circuits.csv"))
 
 # COMMAND ----------
 
@@ -32,14 +41,14 @@ circuits_schema = StructType(fields = [StructField("circuitId",IntegerType(),Fal
 # circuits_df = spark.read\
 #     .option("header",True)\
 #     .option("inferSchema",True)\
-#     .csv("dbfs:/mnt/f1datalake16/raw/circuits.csv")
+#     .csv(f"{raw_folder_path}/circuits.csv")
 
 # COMMAND ----------
 
 circuits_df = spark.read\
     .option("header",True)\
     .schema(circuits_schema)\
-    .csv("dbfs:/mnt/f1datalake16/raw/circuits.csv")
+    .csv(f"{raw_folder_path}/circuits.csv")
 
 # COMMAND ----------
 
@@ -107,7 +116,8 @@ circuits_renamed_df = circuits_select_df.withColumnRenamed("circuitId","circuit_
 
 from pyspark.sql.functions import current_timestamp, lit
 
-circuits_final_df = circuits_renamed_df.withColumn("ingestion_date",current_timestamp())
+circuits_final_df = add_ingestion_date(circuits_renamed_df)
+#circuits_final_df = circuits_renamed_df.withColumn("ingestion_date",current_timestamp())
 
 #Suppose we want to add another coulmn where we pass the value manually it won't work like te way above worked because current_timestamp gives us column object
 # Below example will give you error
@@ -125,8 +135,8 @@ circuits_final_test_df = circuits_renamed_df.withColumn("ingestion_date",current
 
 # COMMAND ----------
 
-circuits_final_df.write.mode("overwrite").parquet("mnt/f1datalake16/processed/circuits")
+circuits_final_df.write.mode("overwrite").parquet(f"{processed_folder_path}/circuits")
 
 # COMMAND ----------
 
-df = spark.read.parquet("/mnt/f1datalake16/processed/circuits")
+df = spark.read.parquet(f"{processed_folder_path}/circuits")
