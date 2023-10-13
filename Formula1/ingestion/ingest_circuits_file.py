@@ -101,6 +101,15 @@ circuits_select_df4 =circuits_df.select( col("circuit_Id"),col("circuit_Ref").al
 
 # COMMAND ----------
 
+# Creating a column source type source type just to get we can get vlues via widgets
+dbutils.widgets.text("p_data_source_type","")
+v_datasource =ddbutils.widgets.get("p_data_source_type")
+
+# you can add this to datafram using withcolumn now
+#circuits_renamed_df = circuits_select_df.withColumn("datasource",lit(v_datasource))
+
+# COMMAND ----------
+
 circuits_renamed_df = circuits_select_df.withColumnRenamed("circuitId","circuit_Id")\
                                         .withColumnRenamed("circuitRef","circuit_Ref")\
                                         .withColumnRenamed("lat","latitude")\
